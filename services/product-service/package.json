@@ -1,0 +1,12 @@
+{
+  "name": "product-service",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": { "start": "node src/index.js", "test": "node --test test" },
+  "dependencies": {
+    "express": "^4.19.2",
+    "pino": "^9.0.0",
+    "prom-client": "^15.1.0"
+  }
+}

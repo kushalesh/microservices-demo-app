@@ -1,0 +1,22 @@
+name: manifests
+on: [push, pull_request]
+jobs:
+  kustomize:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        svc: [api-gateway, product-service, notification-service]
+        env: [dev, staging, prod]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: imranismail/setup-kustomize@v2
+      - uses: azure/setup-helm@v4
+      - name: kustomize build with helm
+        run: kustomize build --enable-helm deploy/${{ matrix.svc }}/overlays/${{ matrix.env }}
+
+  helm-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+      - run: helm lint charts/microservices-app

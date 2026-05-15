@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: app-prod
+
+helmCharts:
+  - name: microservices-app
+    repo: ""
+    version: 0.1.0
+    releaseName: api-gateway
+    namespace: app-prod
+    valuesInline:
+      replicaCount: 4
+      image:
+        repository: ghcr.io/kushalesh/api-gateway
+        tag: "v1.0.0"
+      service:
+        port: 8080
+        targetPort: 8080
+      serviceAccount:
+        annotations:
+          iam.gke.io/gcp-service-account: api-gateway@my-gcp-project.iam.gserviceaccount.com
+      env:
+        - name: APP_VERSION
+          value: "v1.0.0"
+        - name: ENV
+          value: "prod"

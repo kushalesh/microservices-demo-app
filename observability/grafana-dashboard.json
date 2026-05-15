@@ -1,0 +1,10 @@
+{
+  "title": "Microservices Demo — App Performance",
+  "panels": [
+    { "type": "stat",       "title": "Total RPS",            "targets": [{"expr": "sum(rate(http_requests_total[5m]))"}] },
+    { "type": "timeseries", "title": "RPS by service",       "targets": [{"expr": "sum(rate(http_requests_total[5m])) by (kubernetes_pod_name)"}] },
+    { "type": "timeseries", "title": "5xx rate by service",  "targets": [{"expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m])) by (kubernetes_pod_name)"}] },
+    { "type": "timeseries", "title": "Latency P99",          "targets": [{"expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, kubernetes_pod_name))"}] }
+  ],
+  "schemaVersion": 38, "version": 1
+}

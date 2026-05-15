@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: app-staging
+
+helmCharts:
+  - name: microservices-app
+    repo: ""
+    version: 0.1.0
+    releaseName: product-service
+    namespace: app-staging
+    valuesInline:
+      replicaCount: 2
+      image:
+        repository: ghcr.io/kushalesh/product-service
+        tag: "staging-latest"
+      service:
+        port: 3000
+        targetPort: 3000
+      serviceAccount:
+        annotations:
+          iam.gke.io/gcp-service-account: product-service@my-gcp-project.iam.gserviceaccount.com
+      env:
+        - name: APP_VERSION
+          value: "staging-latest"
+        - name: ENV
+          value: "staging"

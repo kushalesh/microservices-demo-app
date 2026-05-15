@@ -1,0 +1,29 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "app.fullname" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: {{ include "app.fullname" . }}.slo
+      rules:
+        - alert: HighErrorRate
+          expr: |
+            sum(rate(http_requests_total{status=~"5..", app=~"{{ include "app.name" . }}.*"}[5m]))
+              / sum(rate(http_requests_total{app=~"{{ include "app.name" . }}.*"}[5m])) > 0.01
+          for: 10m
+          labels: { severity: warning }
+          annotations:
+            summary: "Error rate >1% on {{ include "app.fullname" . }}"
+            runbook_url: "https://github.com/kushalesh/microservices-demo-app/blob/main/docs/RUNBOOK.md#high-error-rate"
+        - alert: HighLatencyP99
+          expr: |
+            histogram_quantile(0.99,
+              sum(rate(http_request_duration_seconds_bucket{app=~"{{ include "app.name" . }}.*"}[5m])) by (le)
+            ) > 1
+          for: 10m
+          labels: { severity: warning }
+          annotations:
+            summary: "P99 latency >1s on {{ include "app.fullname" . }}"
